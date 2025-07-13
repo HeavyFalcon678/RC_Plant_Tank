@@ -355,18 +355,6 @@ void setup()
 
 void loop()
 {
-  if (IrReceiver.decode() && !IRmode)
-  {
-    IrReceiver.resume();
-
-    if (IrReceiver.decodedIRData.command == IR_ok || IrReceiver.decodedIRData.command == IR_cmd5) {
-      IRmode = true;
-      SERIAL_PRINTLN("REMOTE CONTROL ON");
-      delay(200); // To prevent double clicks
-    }
-  }
-
-
   // Now, there are a few functions that need to be called on every iteration of the loop before we move into
   // running the state machine.
   // First, check the bumpers to see if we need to perform a retreat move:
@@ -374,14 +362,26 @@ void loop()
   // Next, update the plant state (in terms of water, light, etc):
   updatePlantState(&plantState, robotState.behaviorState, robotState.lastBehaviorState);
   // Finally, update the LED matrix face:
-  face.updateFace();
+  if (!IRmode) face.updateFace();
 
-  if (IRmode) {
-    robotState.lastBehaviorState = robotState.behaviorState;
-    robotState.behaviorState = BehaviorModes::REMOTE_CONTROL;
-    face.setFaceState(FaceStates::EYES_SQUINT);
-    tank.stop();
+
+
+  if (IrReceiver.decode() && !IRmode)
+  {
+    IrReceiver.resume();
+
+    if (IrReceiver.decodedIRData.command == IR_ok || IrReceiver.decodedIRData.command == IR_cmd5) {
+      IRmode = true;
+      SERIAL_PRINTLN("REMOTE CONTROL ON");
+      delay(250); // To prevent double clicks
+      robotState.lastBehaviorState = robotState.behaviorState;
+      robotState.behaviorState = BehaviorModes::REMOTE_CONTROL;
+      face.setFaceState(FaceStates::EYES_SQUINT);
+      face.updateFace();
+      tank.stop();
+    }
   }
+
 
 
 #pragma region STATE MACHINE
@@ -1204,7 +1204,7 @@ void remoteControlBehavior() {
         robotState.lastBehaviorState = robotState.behaviorState;
         robotState.behaviorState = BehaviorModes::SEEK;
         lastCommand = 0;
-        delay(200); // To prevent double clicks
+        delay(250); // To prevent double clicks
         break;
 
       case IR_up:
@@ -1258,6 +1258,7 @@ void remoteControlBehavior() {
       case IR_star:
         headServo.write(constrain(currentServoPos + 1, 0, 180));
         currentServoPos += 1;
+        delay(15);
         break;
 
       case IR_cmd0:
@@ -1268,6 +1269,7 @@ void remoteControlBehavior() {
       case IR_hashtag:
         headServo.write(constrain(currentServoPos - 1, 0, 180));
         currentServoPos -= 1;
+        delay(15);
         break;
         
 
