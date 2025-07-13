@@ -1,36 +1,22 @@
 /** Hack Pack: Tank Plant
- * Stock Code
- *
- * Tank Plant is a mech suit for a plant. It gives a potted plant a tank chassis to drive around on so that it can seek out light
- * with its light sensors and keep track of its watering with a moisture sensor. It has bumpers on the chassis to help it avoid
- * objects that it runs into, and uses the LED matrix on the front of the pot to display faces and communicate its state. The
- * light sensors on the side of the pot are used for light seeking, and the pot turns like a head with the help of a servo in
- * the chassis.
- *
- * There's a lot happening with this robot! It has a lot of different behaviors and features to keep track of. I documented the
- * code pretty heavily with comments, but to learn more about specific features or programming concepts, check out the
- * Footnotes.md file. There are comments in the code that will tell you to read a specific footnote, and this is where I wrote
- * longer explanations than could reasonably be put into comments.
- *
- * There are definitely improvements that could be made, so if you're looking to practice your programming skills, consider
- * trying to implement some of these ideas:
- *  - I really wanted to make this like a Tamagotchi, with important variables like how well the plant is watered and how much
- *    sunbathing time it has gotten stored in EEPROM so that it could have a personality that grows over a long time and persists
- *    between resets. EEPROM is a special region of memory in the microcontroller that is non-volatile, meaning it that the data
- *    in there will still be there even when the power gets turned off and back on.
- *  - Implement a different type filter than the moving window average filters that I used. I used those because they are simple,
- *    effective, and easy to implement and understand, but they also take up a lot RAM and aren't very efficient to compute. There
- *    are much more efficient filter designs (like a lowpass Butterworth filter) that take much less RAM and processing power, but
- *    which are harder to design up front.
- *  - Sometimes when you water the LECA, the sensor immediately picks up on that large change and the plant thinks its drowning.
- *    You could add a timer that only lets the plant state change to DROWNING if the sensor readings have been high enough to trigger
- *    that for a long enough period of time.
- *  - Create new faces and expressions, or even use the 8 frame buffers to create simple animations!
- *  - Try creating a whole new type of light seeking algorithm! I'm sure there are lots of ways to do it, and I doubt that the one
- *    I came up with is the best.
- *  - Add a GPS module so you can geofence your plant and let it roam outdoors! You might need to modify or shade the light sensors
- *    if you do. I found in testing that the light sensors get fully saturated in direct sunlight, so the robot's light seeking
- *    algorithm gets confused.
+ * Remote Control Hack
+ * Uses the IR receiver and remote from the IR Turret
+ * Plug the receiver pin into D11
+ * Remote keymap as follows:
+ * 
+ * | 1 2 3 |  <-> | ↖ ↑ ↗ |  
+ * | 4 5 6 |  <-> | ← T →  |  
+ * | 7 8 9 |  <-> | ↙ ↓ ↘ |  
+ * | * 0 # |  <-> |⇐ C ⇒ |
+ * |   ↑   |  <-> |   ↑    |  
+ * | ← O → |  <-> | ← T →  |  
+ * |   ↓   |  <-> |   ↓    |  
+ * 
+ * LEGEND
+ * Normal Arrows (→) - Drive tank in that direction
+ * Double Arrows (⇒) - Move head servo in that direction
+ * T - Toggles between Normal and Remote Control mode
+ * C - Centers the head servo
  */
 
 #pragma region LICENSE
