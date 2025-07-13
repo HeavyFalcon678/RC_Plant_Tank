@@ -9,6 +9,7 @@ constexpr int LEFT_DIR_PIN = 7;
 constexpr int RIGHT_SPEED_PIN = 5;
 constexpr int RIGHT_DIR_PIN = 4;
 constexpr int SERVO_PIN = 9;
+constexpr int IR_RECEIVER_PIN = 11;
 
 constexpr int PARKING_BRAKE_PIN = 10;
 

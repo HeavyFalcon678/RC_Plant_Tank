@@ -270,7 +270,7 @@ void remoteControlBehavior();
 
 void setup()
 {
-  IrReceiver.begin(11, ENABLE_LED_FEEDBACK);
+  IrReceiver.begin(IR_RECEIVER_PIN, ENABLE_LED_FEEDBACK);
 
   // start the serial monitor, if we're using serial.
   // Enable or disable Serial monitoring and printing in Configuration.h
@@ -359,9 +359,10 @@ void loop()
   {
     IrReceiver.resume();
 
-    if (IrReceiver.decodedIRData.command == IR_cmd1) {
+    if (IrReceiver.decodedIRData.command == IR_ok || IrReceiver.decodedIRData.command == IR_cmd5) {
       IRmode = true;
       SERIAL_PRINTLN("REMOTE CONTROL ON");
+      delay(200); // To prevent double clicks
     }
   }
 
@@ -1173,47 +1174,108 @@ void parkBehavior()
 }
 
 void remoteControlBehavior() {
+  static int lastCommand = 0; // Store the last valid command
   if (IrReceiver.decode()) {
     IrReceiver.resume();
     IRcommand = IrReceiver.decodedIRData.command;
+    IRtime = millis();
+    lastCommand = IRcommand;
+  }
 
-    switch(IRcommand) {
-      case IR_cmd2:
+
+  // This whole thing is to be a nonblocking way to drive. If you go like:
+  // case up: drive(); delay(); stop(); break; 
+  // it will jerk a lot
+
+  if (millis() - IRtime <= IRtimeout) { 
+    switch (lastCommand) {
+      case IR_ok:
         IRmode = false;
         tank.stop();
         robotState.lastBehaviorState = robotState.behaviorState;
         robotState.behaviorState = BehaviorModes::SEEK;
+        lastCommand = 0;
+        delay(200); // To prevent double clicks
+        break;
+
+      case IR_cmd5:
+        IRmode = false;
+        tank.stop();
+        robotState.lastBehaviorState = robotState.behaviorState;
+        robotState.behaviorState = BehaviorModes::SEEK;
+        lastCommand = 0;
+        delay(200); // To prevent double clicks
         break;
 
       case IR_up:
         tank.drive('F', 255);
-        delay(100);
-        tank.stop();
         break;
 
       case IR_down:
         tank.drive('B', 255);
-        delay(100);
-        tank.stop();
         break;
 
       case IR_left:
         tank.rotate('L', 200);
-        delay(100);
-        tank.stop();
         break;
 
       case IR_right:
         tank.rotate('R', 200);
-        delay(100);
-        tank.stop();
         break;
+
+      case IR_cmd2:
+        tank.drive('F', 255);
+        break;
+
+      case IR_cmd8:
+        tank.drive('B', 255);
+        break;
+
+      case IR_cmd4:
+        tank.rotate('L', 200);
+        break;
+
+      case IR_cmd6:
+        tank.rotate('R', 200);
+        break;
+
+      case IR_cmd1:
+        tank.curve('F', 'L', 100, 255);
+        break;
+
+      case IR_cmd3:
+        tank.curve('F', 'R', 100, 255);
+        break;
+
+      case IR_cmd7:
+        tank.curve('B', 'L', 100, 255);
+        break;
+
+      case IR_cmd9:
+        tank.curve('B', 'R', 100, 255);
+        break;
+
+      case IR_star:
+        headServo.write(constrain(currentServoPos + 1, 0, 180));
+        currentServoPos += 1;
+        break;
+
+      case IR_cmd0:
+        headServo.write(90);
+        currentServoPos = 90;
+        break;
+
+      case IR_hashtag:
+        headServo.write(constrain(currentServoPos - 1, 0, 180));
+        currentServoPos -= 1;
+        break;
+        
+
     }
   } else {
-    if (millis() - IRtime > IRtimeout) {
-      tank.stop();
-      IRcommand = 0;
-    }
+    tank.stop();
+    lastCommand = 0;
+    IRcommand = 0;
   }
 }
 
