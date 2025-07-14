@@ -1,4 +1,39 @@
-/** Hack Pack: Tank Plant
+/** 
+ *                                                       
+ *                       ███                             
+ *                     ████                              
+ *                      ████                             
+ *                   ██ ████                             
+ *                 ████  ███              ███            
+ *                  ████  ███             ███            
+ *                   ████  ███             ███           
+ *                ███  ████ ███        ███ ███           
+ *                 ████  ████  ███      ██ ██            
+ *                   ████   ███ ██       █ ██            
+ *                 ██   ██████ ██     ██ ███             
+ *                 ███████     █      ██ ███             
+ *                             █       █ ██              
+ *                  █████████  █     █ ███               
+ *                           █ █     █ █                 
+ *                     █████   █      █                  
+ *                        ████  ██                       
+ *                        ██  █    ████████              
+ *                           █      ██████ █             
+ *                                █████████              
+ *                         ██ █ ████       █             
+ *                       ██  █ ██   ███                  
+ *                      ██ ██        █                   
+ *                      █  ██                            
+ *                        ███                            
+ *                        ███                            
+ *                                                    
+ *    __ __                   ____     __              ___________ 
+ *   / // /__ ___ __  ____ __/ __/__ _/ /______  ___  / __/_  ( _ )
+ *  / _  / -_) _ `/ |/ / // / _// _ `/ / __/ _ \/ _ \/ _ \ / / _  |
+ * /_//_/\__/\_,_/|___/\_, /_/  \_,_/_/\__/\___/_//_/\___//_/\___/ 
+ *                    /___/                                        
+ * 
+ * Hack Pack: Tank Plant
  * Remote Control Hack
  * Uses the IR receiver and remote from the IR Turret
  * Plug the receiver pin into D11
@@ -359,7 +394,7 @@ void loop()
     if (IrReceiver.decodedIRData.command == IR_ok || IrReceiver.decodedIRData.command == IR_cmd5) {
       IRmode = true;
       SERIAL_PRINTLN("REMOTE CONTROL ON");
-      delay(250); // To prevent double clicks
+      delay(300); // To prevent double clicks
       robotState.lastBehaviorState = robotState.behaviorState;
       robotState.behaviorState = BehaviorModes::REMOTE_CONTROL;
       face.setFaceState(FaceStates::EYES_SQUINT);
@@ -1181,7 +1216,7 @@ void remoteControlBehavior() {
         robotState.lastBehaviorState = robotState.behaviorState;
         robotState.behaviorState = BehaviorModes::SEEK;
         lastCommand = 0;
-        delay(200); // To prevent double clicks
+        delay(300); // To prevent double clicks
         break;
 
       case IR_cmd5:
